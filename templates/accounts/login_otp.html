@@ -1,0 +1,82 @@
+{% load static %}
+{% spaceless %}<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود / ثبت نام | رویال طهرون</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <style>
+        :root {
+            --gradient: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
+            --bg-dark: #0a0b1e; --text-white: #ffffff; --input-bg: #141526;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
+        body {
+            background: linear-gradient(to top, var(--bg-dark), rgba(10,11,30,0.8)), url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--text-white);
+        }
+
+        .login-card {
+            background: rgba(20, 21, 38, 0.8); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1); padding: 3rem 2rem; border-radius: 20px;
+            width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .logo { font-size: 2rem; font-weight: 900; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        h2 { margin-bottom: 1rem; font-size: 1.2rem; color: #b4b4c7; }
+
+        /* Phone Input Specifics */
+        input[type="text"] {
+            width: 100%; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+            background: var(--input-bg); color: white; font-family: 'Vazirmatn'; 
+            font-size: 1.3rem; letter-spacing: 2px; text-align: center; /* Centered text for phone */
+            margin-bottom: 20px; outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: #8e2de2; box-shadow: 0 0 15px rgba(142, 45, 226, 0.3); }
+        
+        /* Remove arrows from number input */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        .btn-login {
+            width: 100%; padding: 14px; background: var(--gradient); border: none; border-radius: 12px;
+            color: white; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .btn-login:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(142, 45, 226, 0.4); }
+        
+        .back-home { margin-top: 25px; display: inline-flex; align-items: center; gap: 5px; color: #aaa; font-size: 0.9rem; text-decoration: none; }
+        .back-home:hover { color: white; }
+        
+        .error-msg { color: #ff4444; background: rgba(255, 68, 68, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+{% endspaceless %}
+
+    <div class="login-card">
+        <div class="logo">ROYAL TEHRAN</div>
+        <h2>ورود / ثبت نام</h2>
+        <p style="color:#888; font-size:0.9rem; margin-bottom:20px;">شماره موبایل خود را وارد کنید</p>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if error %}
+                <div class="error-msg"><ion-icon name="alert-circle"></ion-icon> {{ error }}</div>
+            {% endif %}
+            
+            <input type="text" name="phone" placeholder="09xxxxxxxxx" maxlength="11" pattern="\d*" inputmode="numeric" required>
+
+            <button type="submit" class="btn-login">دریافت کد تایید</button>
+        </form>
+
+        <a href="{% url 'menu:menu_view' %}" class="back-home">
+            <ion-icon name="arrow-forward"></ion-icon> بازگشت به منو
+        </a>
+    </div>
+
+</body>
+</html>

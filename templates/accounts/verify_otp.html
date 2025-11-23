@@ -1,0 +1,196 @@
+{% load static %}
+{% spaceless %}<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تایید شماره | رویال طهرون</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <style>
+        :root {
+            --gradient: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
+            --bg-dark: #0a0b1e; --text-white: #ffffff; --input-bg: #141526;
+            --accent-color: #8e2de2;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
+        body {
+            background: linear-gradient(to top, var(--bg-dark), rgba(10,11,30,0.8)), url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--text-white);
+        }
+
+        .login-card {
+            background: rgba(20, 21, 38, 0.8); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1); padding: 2rem; border-radius: 20px;
+            width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .logo { font-size: 2rem; font-weight: 900; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        h2 { margin-bottom: 1rem; font-size: 1.2rem; color: #b4b4c7; }
+
+        /* OTP Input */
+        input[type="text"] {
+            width: 100%; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+            background: var(--input-bg); color: white; font-family: 'Vazirmatn'; 
+            font-size: 1.8rem; letter-spacing: 15px; text-align: center;
+            margin-bottom: 20px; outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: #8e2de2; box-shadow: 0 0 15px rgba(142, 45, 226, 0.3); }
+        
+        .btn-login {
+            width: 100%; padding: 14px; background: var(--gradient); border: none; border-radius: 12px;
+            color: white; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .btn-login:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(142, 45, 226, 0.4); }
+        
+        .error-msg { color: #ff4444; background: rgba(255, 68, 68, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem; }
+
+        /* --- CIRCULAR TIMER --- */
+        .timer-wrapper {
+            display: flex; justify-content: center; align-items: center;
+            margin-top: 20px; position: relative;
+        }
+        
+        .base-timer { position: relative; width: 60px; height: 60px; }
+        
+        .base-timer__svg { transform: scaleX(-1); } /* Flip for RTL feel */
+        
+        .base-timer__circle { fill: none; stroke: none; }
+        
+        .base-timer__path-elapsed {
+            stroke-width: 4px; stroke: rgba(255,255,255,0.1);
+        }
+        
+        .base-timer__path-remaining {
+            stroke-width: 4px; stroke-linecap: round; transform: rotate(90deg); transform-origin: center;
+            transition: 1s linear all; fill: none; stroke: var(--accent-color);
+        }
+        
+        .base-timer__label {
+            position: absolute; width: 60px; height: 60px; top: 0; display: flex;
+            align-items: center; justify-content: center; font-size: 0.9rem; color: #ddd;
+        }
+
+        .resend-link {
+            color: #888; text-decoration: none; font-size: 0.9rem; margin-top: 15px; display: inline-block;
+            pointer-events: none; opacity: 0.5; transition: 0.3s;
+        }
+        .resend-link.active { color: var(--accent-color); pointer-events: all; opacity: 1; cursor: pointer; }
+
+    </style>
+</head>
+<body>
+{% endspaceless %}
+
+    <div class="login-card">
+        <div class="logo">ROYAL TEHRAN</div>
+        <h2>تایید شماره موبایل</h2>
+        <p style="color:#888; font-size:0.9rem; margin-bottom:20px;">کد ارسال شده به {{ phone }} را وارد کنید</p>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if error %}
+                <div class="error-msg"><ion-icon name="alert-circle"></ion-icon> {{ error }}</div>
+            {% endif %}
+            
+            <input type="text" name="code" placeholder="----" maxlength="4" pattern="\d*" inputmode="numeric" required autofocus>
+
+            <button type="submit" class="btn-login">ورود به حساب</button>
+        </form>
+
+        <div class="timer-wrapper">
+            <div class="base-timer">
+                <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <g class="base-timer__circle">
+                        <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45"></circle>
+                        <path
+                            id="base-timer-path-remaining"
+                            stroke-dasharray="283"
+                            class="base-timer__path-remaining"
+                            d="
+                            M 50, 50
+                            m -45, 0
+                            a 45,45 0 1,0 90,0
+                            a 45,45 0 1,0 -90,0
+                            "
+                        ></path>
+                    </g>
+                </svg>
+                <span id="base-timer-label" class="base-timer__label">
+                    </span>
+            </div>
+        </div>
+
+        <a href="{% url 'accounts:login' %}" id="resend-btn" class="resend-link">ارسال مجدد کد / تغییر شماره</a>
+    </div>
+
+    <script>
+        // 1. Get Time Remaining from Django Context
+        const TIME_LIMIT = 120; // Total time in seconds
+        let timePassed = 0;
+        let timeLeft = {{ time_remaining|default:120 }}; // Use Django variable
+        
+        // If user refreshed, calculate how much "circle" should be empty
+        timePassed = TIME_LIMIT - timeLeft;
+
+        const timerLabel = document.getElementById("base-timer-label");
+        const resendBtn = document.getElementById("resend-btn");
+        
+        startTimer();
+
+        function startTimer() {
+            // Update initial visual state
+            setCircleDasharray();
+            timerLabel.innerHTML = formatTime(timeLeft);
+
+            const timerInterval = setInterval(() => {
+                // Increment time passed
+                timePassed = timePassed += 1;
+                timeLeft = TIME_LIMIT - timePassed;
+                
+                // Update UI
+                timerLabel.innerHTML = formatTime(timeLeft);
+                setCircleDasharray();
+
+                // Check if expired
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerLabel.innerHTML = "0:00";
+                    
+                    // Enable Resend Link
+                    resendBtn.classList.add('active');
+                    resendBtn.innerHTML = "ارسال مجدد کد (منقضی شد)";
+                }
+            }, 1000);
+        }
+
+        function formatTime(time) {
+            const minutes = Math.floor(time / 60);
+            let seconds = time % 60;
+            if (seconds < 10) {
+                seconds = `0${seconds}`;
+            }
+            return `${minutes}:${seconds}`;
+        }
+
+        // Update the Circle Ring Length
+        function setCircleDasharray() {
+            const circleDasharray = `${(
+                calculateTimeFraction() * 283
+            ).toFixed(0)} 283`;
+            document
+                .getElementById("base-timer-path-remaining")
+                .setAttribute("stroke-dasharray", circleDasharray);
+        }
+
+        function calculateTimeFraction() {
+            const rawFraction = timeLeft / TIME_LIMIT;
+            return rawFraction - (1 / TIME_LIMIT) * (1 - rawFraction);
+        }
+    </script>
+
+</body>
+</html>

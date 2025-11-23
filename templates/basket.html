@@ -1,0 +1,262 @@
+{% load static %}
+{% load humanize %} 
+{% spaceless %}<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سبد خرید | رستوران رویال طهرون</title>
+    
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <style>
+        /* ... (Your existing variables and page structure styles remain the same) ... */
+        :root {
+            --gradient: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
+            --bg-dark: #0a0b1e; --card-bg: #141526; --input-bg: #0f101c;
+            --text-white: #ffffff; --text-gray: #b4b4c7; --accent-color: #8e2de2;
+            --danger-color: #ff4444; --success-color: #00ff88;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-white); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 800px; margin: 0 auto; padding: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; }
+        .header h1 { font-size: 2rem; color: var(--accent-color); }
+        .cart-list { list-style: none; padding: 0; margin-bottom: 2rem; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.05); transition: opacity 0.3s, transform 0.3s; }
+        .item-info { display: flex; gap: 1rem; align-items: center; }
+        .item-info img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+        .item-details { display: flex; flex-direction: column; gap: 5px; }
+        .item-details h3 { font-size: 1.1rem; margin: 0; }
+
+        /* --- 🟢 UPDATED: SMALLER QUANTITY CONTROLS --- */
+        .qty-control {
+            display: flex;
+            align-items: center;
+            background: var(--input-bg);
+            border-radius: 6px; /* Slightly tighter radius */
+            border: 1px solid rgba(255,255,255,0.1);
+            width: fit-content;
+            margin-top: 5px;
+        }
+
+        .qty-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-white);
+            padding: 2px 8px; /* Reduced padding */
+            cursor: pointer;
+            font-size: 0.9rem; /* Smaller Icon */
+            display: flex;
+            align-items: center;
+            transition: 0.2s;
+        }
+        .qty-btn:hover { color: var(--accent-color); background: rgba(255,255,255,0.05); }
+
+        .qty-value {
+            padding: 0 8px; /* Reduced padding */
+            font-weight: bold;
+            font-size: 0.9rem; /* Smaller Font */
+            min-width: 25px;
+            text-align: center;
+        }
+
+        .item-price { text-align: left; font-weight: bold; color: #b19cd9; flex-shrink: 0; }
+        .cart-summary { background: var(--card-bg); border-radius: 10px; padding: 1.5rem; border: 1px solid var(--accent-color); margin-bottom: 2rem; }
+        .discount-box { display: flex; gap: 10px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .discount-input { flex-grow: 1; background: var(--input-bg); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px 15px; border-radius: 8px; font-family: 'Vazirmatn'; outline: none; transition: 0.3s; }
+        .discount-input:focus { border-color: var(--accent-color); }
+        .discount-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 0 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .discount-btn:hover { background: var(--accent-color); border-color: var(--accent-color); }
+        .summary-row { display: flex; justify-content: space-between; font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .summary-row.final { font-size: 1.5rem; font-weight: bold; color: var(--accent-color); margin-top: 1rem; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 1rem; }
+        .actions { display: flex; justify-content: space-between; gap: 1rem; }
+        .btn { flex-grow: 1; padding: 12px 20px; border-radius: 8px; text-align: center; font-weight: bold; transition: 0.3s; }
+        .btn-checkout { background: var(--gradient); color: var(--text-white); }
+        .btn-checkout:hover { opacity: 0.9; box-shadow: 0 5px 15px rgba(142, 45, 226, 0.4); }
+        .btn-clear { background: var(--danger-color); color: var(--text-white); }
+        .btn-clear:hover { opacity: 0.9; }
+        .empty-cart { text-align: center; padding: 4rem 0; background: var(--card-bg); border-radius: 10px; color: var(--text-gray); border: 1px solid rgba(255,255,255,0.05); }
+
+        @media (max-width: 600px) {
+            .container { padding: 1rem; }
+            .header h1 { font-size: 1.5rem; }
+            .cart-item { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .item-info { width: 100%; }
+            .item-details { width: 100%; }
+            .item-price { width: 100%; text-align: right; padding-top: 0.5rem; border-top: 1px dashed rgba(255,255,255,0.05); margin-top: 5px; }
+            .discount-box { flex-direction: column; }
+            .discount-btn { padding: 10px; }
+            .actions { flex-direction: column; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+{% endspaceless %}
+
+    <div class="container">
+        <div class="header">
+            <h1>سبد خرید <ion-icon name="basket"></ion-icon></h1>
+            <a href="{% url 'menu:menu_view' %}" style="color: var(--text-gray);">
+                <ion-icon name="arrow-forward-outline"></ion-icon> ادامه خرید
+            </a>
+        </div>
+
+        {% if items_data %}
+            <ul class="cart-list">
+                {% for item_data in items_data %}
+                    <li class="cart-item" id="row-{{ item_data.item.id }}">
+                        <div class="item-info">
+                            <img src="{% if item_data.item.image %}{{ item_data.item.image.url }}{% else %}https://via.placeholder.com/60x60{% endif %}" alt="{{ item_data.item.name }}">
+                            
+                            <div class="item-details">
+                                <h3>{{ item_data.item.name }}</h3>
+                                
+                                <div class="qty-control">
+                                    <button class="qty-btn minus" onclick="updateCart({{ item_data.item.id }}, 'decrease')">
+                                        <ion-icon name="remove-outline"></ion-icon>
+                                    </button>
+                                    
+                                    <span class="qty-value" id="qty-{{ item_data.item.id }}">{{ item_data.quantity }}</span>
+                                    
+                                    <button class="qty-btn plus" onclick="updateCart({{ item_data.item.id }}, 'increase')">
+                                        <ion-icon name="add-outline"></ion-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="item-price">
+                            <span id="price-{{ item_data.item.id }}">{{ item_data.total_price|intcomma }}</span> تومان
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="cart-summary">
+                <div class="discount-box">
+                    <input type="text" class="discount-input" placeholder="کد تخفیف دارید؟">
+                    <button class="discount-btn">اعمال کد</button>
+                </div>
+
+                <div class="summary-row">
+                    <span>جمع اقلام:</span>
+                    <span class="price-value"><span id="total-price">{{ total|intcomma }}</span> تومان</span>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <div class="summary-row" style="color: var(--success-color); font-size: 1rem;">
+                        <span>تخفیف اعضا (۵٪):</span>
+                        <span class="price-value"><span id="discount-amount">{{ discount_amount|intcomma }}</span> تومان</span>
+                    </div>
+                    <div class="summary-row final">
+                        <span>مبلغ قابل پرداخت:</span>
+                        <span class="price-value"><span id="final-total">{{ final_total|intcomma }}</span> تومان</span>
+                    </div>
+                {% else %}
+                    <div class="summary-row" style="font-size: 0.9rem; color: var(--danger-color); margin-top:10px;">
+                        <span>تخفیف:</span>
+                        <span><a href="{% url 'accounts:login' %}" style="text-decoration: underline;">وارد شوید</a> تا ۵٪ تخفیف بگیرید!</span>
+                    </div>
+                    <div class="summary-row final">
+                        <span>مبلغ نهایی:</span>
+                        <span class="price-value"><span id="final-total">{{ total|intcomma }}</span> تومان</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="actions">
+                <a href="#" class="btn btn-checkout">تکمیل و پرداخت</a>
+                <a href="{% url 'menu:clear_basket' %}" class="btn btn-clear">خالی کردن سبد</a>
+            </div>
+
+        {% else %}
+            <div class="empty-cart">
+                <ion-icon name="basket-outline" style="font-size: 3rem;"></ion-icon>
+                <h2>سبد خرید شما خالی است.</h2>
+                <p>برای شروع سفارش، به منو برگردید.</p>
+                <a href="{% url 'menu:menu_view' %}" class="btn btn-checkout" style="margin-top: 1rem; display: inline-block;">
+                    مشاهده منو
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function updateCart(itemId, action) {
+            const url = '/update-cart/';
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ 'id': itemId, 'action': action })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const row = document.getElementById(`row-${itemId}`);
+                    
+                    // 1. If quantity became 0, remove the row visually
+                    if (data.new_quantity === 0) {
+                        if (row) {
+                            row.style.opacity = '0';
+                            row.style.transform = 'translateX(20px)';
+                            setTimeout(() => {
+                                row.remove();
+                                // If cart is empty, reload to show empty state
+                                if (document.querySelectorAll('.cart-item').length === 0) {
+                                    location.reload(); 
+                                }
+                            }, 300);
+                        }
+                    } else {
+                        // 2. Update the quantity number
+                        const qtySpan = document.getElementById(`qty-${itemId}`);
+                        if (qtySpan) qtySpan.innerText = data.new_quantity;
+
+                        // 3. Update the specific item total price
+                        const itemTotalSpan = document.getElementById(`price-${itemId}`);
+                        if (itemTotalSpan) itemTotalSpan.innerText = data.item_total;
+                    }
+
+                    // 4. Update Global Totals
+                    document.getElementById('total-price').innerText = data.cart_total;
+                    
+                    // Update discount/final totals if they exist
+                    const discountSpan = document.getElementById('discount-amount');
+                    if (discountSpan) discountSpan.innerText = data.discount_amount;
+                    
+                    const finalTotalSpan = document.getElementById('final-total');
+                    if (finalTotalSpan) finalTotalSpan.innerText = data.final_total;
+
+                } else {
+                    console.error('Update failed:', data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+
+</body>
+</html>

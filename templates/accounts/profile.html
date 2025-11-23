@@ -1,0 +1,250 @@
+{% load static %}
+{% load humanize %} 
+{% spaceless %}<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پروفایل کاربری | رویال طهرون</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    
+    <style>
+        /* --- THEME VARIABLES --- */
+        :root {
+            --gradient: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
+            --bg-dark: #0a0b1e; 
+            --card-bg: #141526;
+            --text-white: #ffffff;
+            --accent-color: #8e2de2;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
+        body { background: var(--bg-dark); color: white; padding: 20px; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+        
+        .container { max-width: 1100px; margin: 0 auto; }
+        
+        /* --- PROFILE HEADER (Glass Card) --- */
+        .profile-header {
+            background: rgba(20, 21, 38, 0.8);
+            padding: 2rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .user-info h1 { font-size: 1.8rem; margin-bottom: 5px; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .user-info p { color: #bbb; letter-spacing: 2px; font-family: sans-serif; font-size: 1.1rem; }
+        
+        .logout-btn {
+            border: 1px solid #ff4444; color: #ff4444; padding: 10px 25px; border-radius: 50px; transition:0.3s; display: flex; align-items: center; gap: 10px;
+        }
+        .logout-btn:hover { background: #ff4444; color: white; }
+
+        /* --- FAVORITES GRID --- */
+        .section-title { font-size: 1.5rem; margin-bottom: 20px; border-right: 4px solid var(--accent-color); padding-right: 15px; color: #ddd; }
+
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            gap: 25px; 
+        }
+        
+        /* --- COMPACT CARD STYLE --- */
+        .favorite-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+            /* 👇 ADD OPACITY to transition for smooth removal */
+            transition: opacity 0.3s, transform 0.3s, border 0.3s; 
+            position: relative;
+            display: flex;
+            flex-direction: column; 
+        }
+
+        .favorite-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .fav-img { width: 100%; height: 160px; object-fit: cover; }
+
+        .fav-body { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
+
+        .fav-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; color: white; }
+        .fav-price { color: #b19cd9; font-size: 1rem; font-weight: bold; margin-bottom: 15px; }
+        
+        .fav-actions {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 12px;
+        }
+
+        .btn-order { color: #00ff88; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
+        .btn-order:hover { color: #fff; }
+
+        .btn-remove { color: #ff4444; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; padding: 2px; }
+        .btn-remove:hover { transform: scale(1.1); }
+
+        @media (max-width: 600px) {
+            .profile-header { flex-direction: column; text-align: center; }
+            .logout-btn { width: 100%; justify-content: center; }
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 15px; } 
+            .fav-img { height: 120px; }
+        }
+    </style>
+</head>
+<body>
+{% endspaceless %}
+
+<div class="container">
+    
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'menu:menu_view' %}" style="display:inline-flex; align-items:center; gap:5px; color:#aaa; transition:0.3s;">
+            <ion-icon name="arrow-forward"></ion-icon> بازگشت به منو
+        </a>
+    </div>
+
+    <div class="profile-header">
+        <div class="user-info">
+            <h1>پروفایل کاربری</h1>
+            <p>{{ profile.phone_number }}</p>
+        </div>
+        <a href="{% url 'accounts:logout' %}" class="logout-btn">
+            <ion-icon name="log-out-outline"></ion-icon> خروج از حساب
+        </a>
+    </div>
+
+    <h2 class="section-title">غذاهای مورد علاقه من</h2>
+
+    <div class="grid">
+        {% for favorite in favorites %}
+        <div class="favorite-card" id="fav-{{ favorite.item.id }}">
+            <img src="{% if favorite.item.image %}{{ favorite.item.image.url }}{% else %}https://via.placeholder.com/300{% endif %}" class="fav-img" alt="{{ favorite.item.name }}">
+            
+            <div class="fav-body">
+                <div class="fav-title">{{ favorite.item.name }}</div>
+                <div class="fav-price">{{ favorite.item.price|intcomma }} تومان</div>
+                
+                <div class="fav-actions">
+                    <a href="{% url 'menu:menu_view' %}#item-{{ favorite.item.id }}" class="btn-order">
+                        سفارش مجدد <ion-icon name="cart-outline"></ion-icon>
+                    </a>
+                    
+                    <div class="btn-remove" title="حذف از علاقه مندی‌ها">
+                        <ion-icon name="heart-dislike-outline" 
+                                  onclick="removeFavorite({{ favorite.item.id }}, this)">
+                        </ion-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        </div> <div style="text-align: center; padding: 50px; color: #666; grid-column: 1/-1;">
+            <ion-icon name="heart-outline" style="font-size: 4rem; margin-bottom: 10px; opacity: 0.5;"></ion-icon>
+            <p>لیست علاقه‌مندی‌های شما خالی است.</p>
+            <a href="{% url 'menu:menu_view' %}" style="color: var(--accent-color); margin-top: 10px; display: inline-block;">مشاهده منو</a>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+    // --- CSRF Token Function (Required for Django AJAX POST requests) ---
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+
+    // --- Function: Handles AJAX call and DOM Removal ---
+    function removeFavorite(itemId, iconElement) {
+        const url = "{% url 'accounts:toggle_favorite' %}";
+        const csrftoken = getCookie('csrftoken');
+        
+        // 1. Construct the ID (e.g., "fav-12") and select the card
+        const cardId = `fav-${itemId}`;
+        const cardToRemove = document.getElementById(cardId); 
+
+        if (!cardToRemove) {
+            console.error(`DOM Error: Could not find card element with ID: ${cardId}. Please check the ID in profile.html.`);
+            return; 
+        }
+        
+        // 2. AJAX Fetch Call 
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ 'item_id': itemId })
+        })
+        .then(response => {
+            if (!response.ok) {
+                // If the HTTP status is bad (e.g., 404, 500)
+                throw new Error(`HTTP Error: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // 3. Check the database response
+            if (data.is_favorited === false) {
+                console.log(`Success! Item ${itemId} unfavorited. Running DOM removal.`);
+
+                // 4. UX: Start fade-out effect
+                cardToRemove.style.opacity = '0'; 
+                
+                // 5. Remove the element from the DOM after the transition
+                setTimeout(() => {
+                    cardToRemove.remove();
+                    
+                    // 6. Check and update the empty state message
+                    if (document.querySelectorAll('.favorite-card').length === 0) {
+                        const grid = document.querySelector('.grid');
+                        grid.innerHTML = `
+                            <div style="text-align: center; padding: 50px; color: #666; grid-column: 1/-1;">
+                                <ion-icon name="heart-outline" style="font-size: 4rem; margin-bottom: 10px; opacity: 0.5;"></ion-icon>
+                                <p>لیست علاقه‌مندی‌های شما خالی است.</p>
+                                <a href="{% url 'menu:menu_view' %}" style="color: var(--accent-color); margin-top: 10px; display: inline-block;">مشاهده منو</a>
+                            </div>
+                        `;
+                    }
+                }, 300); 
+            } else {
+                console.error(`API Logic Error: Item ${itemId} returned TRUE after supposed removal.`);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch/Network Error:', error);
+            alert('خطا در حذف آیتم. لطفا دوباره تلاش کنید.');
+            // Revert opacity if removal failed
+            if (cardToRemove) cardToRemove.style.opacity = '1';
+        });
+    }
+</script>
+
+</body>
+</html>

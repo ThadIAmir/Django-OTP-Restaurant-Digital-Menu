@@ -1,0 +1,478 @@
+{% load static %}
+{% load humanize %} 
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رستوران رویال طهرون | منوی دیجیتال</title>
+    
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --gradient: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
+            --gradient-hover: linear-gradient(135deg, #3a00b0 0%, #7e1dd2 100%);
+            --bg-dark: #0a0b1e; 
+            --card-bg: #141526;
+            --nav-bg: rgba(10, 11, 30, 0.95);
+            --text-white: #ffffff;
+            --text-gray: #b4b4c7;
+            --accent-glow: 0 0 20px rgba(142, 45, 226, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body { font-family: 'Vazirmatn', sans-serif; background-color: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; }
+
+        /* --- MAIN HEADER (Logo & Login Only) --- */
+        header {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr; /* Left, Center, Right */
+            align-items: center;
+            padding: 1.5rem;
+            background: var(--bg-dark);
+            border-bottom: 1px solid #222;
+            position: relative; 
+            z-index: 500;
+        }
+
+        /* Center Logo */
+        .logo { 
+            grid-column: 2; 
+            text-align: center;
+            font-size: 1.8rem; 
+            font-weight: 900; 
+            background: var(--gradient); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            letter-spacing: -1px; 
+        }
+
+        /* Right Side (Login/Profile) */
+        .header-right { 
+            grid-column: 1; 
+            justify-self: start; 
+            display: flex; 
+            gap: 15px; 
+        }
+        
+        /* Empty Left Side (for balance) */
+        .header-left { grid-column: 3; }
+
+        /* Icon Styles */
+        .icon-btn { 
+            font-size: 1.5rem; 
+            color: var(--text-white); 
+            transition: 0.3s; 
+            display: flex; 
+            align-items: center; 
+        }
+        .icon-btn:hover { color: #8e2de2; }
+
+        /* --- STICKY NAV (Categories & Basket) --- */
+        .category-nav {
+            position: sticky;
+            top: 0;
+            background: var(--nav-bg);
+            backdrop-filter: blur(15px);
+            padding: 10px 20px;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            
+            /* Flex Layout: Categories on Right, Basket on Left (RTL) */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        /* Categories List (Scrollable) */
+        .cat-list {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
+            padding-left: 15px;
+            flex-grow: 1;
+        }
+        .cat-list::-webkit-scrollbar { display: none; } /* Chrome */
+
+        .cat-btn {
+            padding: 8px 20px;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-white);
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .cat-btn:hover { background: var(--gradient); border-color: transparent; }
+
+        /* Navigation Basket (Always Visible) */
+        .nav-basket {
+            font-size: 1.8rem;
+            color: white;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            background: rgba(255,255,255,0.05);
+            padding: 8px;
+            border-radius: 12px;
+        }
+        .nav-basket:hover { color: #8e2de2; background: rgba(255,255,255,0.1); }
+
+        /* Basket Counter Badge */
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff0055;
+            color: white;
+            font-size: 0.7rem;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 2px solid var(--bg-dark);
+            box-sizing: content-box;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 60vh;
+            position: relative;
+            background: url('media/top-view-served-table-with-multiple-meals-snacks.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 20px;
+            isolation: isolate;
+        }
+        /* Gradient Overlay */
+        .hero::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 60%;
+            background: linear-gradient(to top, var(--bg-dark), transparent);
+            z-index: -1; pointer-events: none;
+        }
+        .hero h1 { font-size: 3rem; text-shadow: 0 4px 10px rgba(0,0,0,0.8); margin-bottom: 10px; z-index: 2; }
+        .hero p { color: #ddd; font-size: 1.2rem; text-shadow: 0 2px 5px rgba(0,0,0,0.8); z-index: 2; }
+
+        /* --- MENU GRID & CARDS --- */
+        .menu-section { padding: 4rem 1.5rem; max-width: 1100px; margin: 0 auto; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .section-title { font-size: 2rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px; color: #cfaeff; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+
+        /* Horizontal Card (Desktop) */
+        .card {
+            background: var(--card-bg); border-radius: 20px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; position: relative;
+            display: flex; flex-direction: row-reverse; align-items: stretch; min-height: 180px;
+        }
+        .card:hover { transform: translateY(-5px); border-color: #8e2de2; box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
+        
+        .card-img { width: 35%; max-width: 200px; height: auto; object-fit: cover; flex-shrink: 0; }
+        .card-body { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        .card-title { font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: bold; }
+        .card-desc { font-size: 0.9rem; color: var(--text-gray); margin-bottom: 1rem; height: auto; max-height: 80px; overflow: hidden; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .price { font-size: 1.2rem; font-weight: bold; color: #b19cd9; }
+
+        /* --- SCROLL OFFSETS & ANIMATION --- */
+        [id^="cat-"] { scroll-margin-top: 80px; }
+        [id^="item-"] { scroll-margin-top: 120px; }
+        [id^="item-"]:target { animation: targeted-glow 3s ease-out 1 forwards; border-color: #8e2de2; }
+
+        @keyframes targeted-glow {
+            0% { box-shadow: 0 0 15px 5px rgba(142, 45, 226, 0.8); transform: scale(1.02); }
+            100% { box-shadow: none; transform: none; }
+        }
+
+        /* --- BUTTONS --- */
+        .add-btn {
+            background: var(--gradient); color: white; border: none; padding: 8px 15px; border-radius: 12px;
+            cursor: pointer; font-family: 'Vazirmatn'; transition: 0.3s; display: flex; align-items: center; gap: 5px;
+        }
+        .add-btn:hover { background: var(--gradient-hover); box-shadow: var(--accent-glow); }
+        .add-btn:active { transform: scale(0.95); }
+
+        /* Heart Icon */
+        .fav-btn {
+            position: absolute; top: 10px; right: 10px; /* Visually Left in RTL */
+            background: rgba(0,0,0,0.6); color: #fff; border: none; width: 35px; height: 35px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 10; font-size: 1.2rem; transition: 0.3s;
+        }
+        [dir="rtl"] .fav-btn { right: auto; left: 10px; }
+        .fav-btn:hover { background: #fff; color: #ff0055; }
+        .fav-btn.active { color: #ff0055; background: rgba(255,255,255,0.9); }
+        .fav-btn ion-icon { pointer-events: none; }
+
+        /* --- TOAST & MODAL --- */
+        #toast {
+            visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center;
+            border-radius: 50px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 30px;
+            transform: translateX(-50%); font-size: 1rem; border: 1px solid #8e2de2; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+
+        .login-modal {
+            position: fixed; bottom: -100%; left: 0; width: 100%; background: linear-gradient(to right, #141526, #0a0b1e);
+            border-top: 2px solid #8e2de2; padding: 20px; z-index: 2000; transition: 0.5s ease-out;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
+        }
+        .login-modal.active { bottom: 0; }
+        .modal-content { max-width: 600px; text-align: center; position: relative; }
+        .modal-close { position: absolute; top: -10px; right: -10px; color: #666; cursor: pointer; font-size: 1.5rem; }
+        .discount-badge { background: #ff0055; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; margin-right: 5px; }
+
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        /* --- SCROLL TO TOP --- */
+        .scroll-top {
+            position: fixed; bottom: 20px; right: 20px; background: var(--gradient); color: white;
+            width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; cursor: pointer; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 900;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .scroll-top.visible { opacity: 1; pointer-events: all; }
+        [dir="rtl"] .scroll-top { right: auto; left: 20px; } 
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            /* On tablet, just adjust grid */
+            .grid { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+            .card-img { width: 120px; max-width: 120px; }
+        }
+
+        @media (max-width: 480px) {
+            .logo { font-size: 1.4rem; }
+            .category-nav { padding: 10px 15px; }
+            .nav-basket { font-size: 1.5rem; padding: 6px; }
+            
+            /* Revert to Vertical Stack */
+            .grid { grid-template-columns: 1fr; gap: 1rem; }
+            .card { flex-direction: column; min-height: initial; }
+            .card-img { height: 180px; width: 100%; max-width: initial; }
+            .card-desc { height: 40px; max-height: 40px; margin-bottom: 1rem; }
+            
+            .hero { height: 40vh; }
+            .hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header id="main-header">
+        <div class="header-right">
+            {% if user.is_authenticated %}
+                <a href="{% url 'accounts:profile' %}" class="icon-btn" title="پروفایل">
+                    <ion-icon name="person-circle-outline"></ion-icon>
+                </a>
+                <a href="{% url 'accounts:logout' %}" class="icon-btn" style="font-size:1.2rem; color:#ff4444;" title="خروج">
+                    <ion-icon name="log-out-outline"></ion-icon>
+                </a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}" class="icon-btn">
+                    <ion-icon name="log-in-outline"></ion-icon>
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="logo">ROYAL TEHRAN</div>
+
+        <div class="header-left"></div>
+    </header>
+
+    <nav class="category-nav">
+        
+        <div class="cat-list">
+            {% for category in categories %}
+            <a href="#cat-{{ category.id }}" class="cat-btn">{{ category.name }}</a>
+            {% endfor %}
+        </div>
+
+        <a href="{% url 'menu:basket' %}" class="nav-basket">
+            <ion-icon name="basket-outline"></ion-icon>
+            <span class="cart-count">{{ cart_count|default:"0" }}</span>
+        </a>
+    </nav>
+
+    <div class="hero">
+        <h1>طعم شب‌های طهرون</h1>
+        <p>ترکیبی از هنر آشپزی مدرن و اصالت ایرانی</p>
+    </div>
+
+    {% for category in categories %}
+    <section id="cat-{{ category.id }}" class="menu-section">
+        <h2 class="section-title">
+            <ion-icon name="restaurant-outline"></ion-icon> {{ category.name }}
+        </h2>
+        
+        <div class="grid">
+            {% for item in category.menu_items %} <div class="card" id="item-{{ item.id }}">
+                
+                {% if user.is_authenticated %}
+                    <button class="fav-btn {% if item.id in user_favorites %}active{% endif %}" 
+                            onclick="toggleFavorite({{ item.id }}, this)">
+                        <ion-icon name="heart{% if item.id not in user_favorites %}-outline{% endif %}"></ion-icon>
+                    </button>
+                {% endif %}
+
+                <img src="{% if item.image %}{{ item.image.url }}{% else %}https://via.placeholder.com/400x300{% endif %}" class="card-img" alt="{{ item.name }}">
+                
+                <div class="card-body">
+                    <h3 class="card-title">{{ item.name }}</h3>
+                    <p class="card-desc">{{ item.description }}</p>
+                    
+                    <div class="card-footer">
+                        <span class="price">{{ item.price|intcomma }} تومان</span>
+                        
+                        <button class="add-btn" onclick="addToCart({{ item.id }}, '{{ item.name }}')">
+                            <ion-icon name="add"></ion-icon> افزودن
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endfor %}
+    
+    <footer>
+        <p dir="ltr">&copy; 2025 Royal Tehran. All Rights Reserved.</p>
+    </footer>
+
+    <div class="scroll-top" onclick="window.scrollTo(0,0)">
+        <ion-icon name="arrow-up-outline"></ion-icon>
+    </div>
+
+    {% if not user.is_authenticated %}
+    <div class="login-modal" id="loginModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h3><ion-icon name="gift-outline" style="color:#ff0055"></ion-icon> پیشنهاد ویژه مهمانان</h3>
+            <p style="margin: 10px 0; color:#ddd;">
+                با ورود به حساب کاربری، از <span class="discount-badge">۵٪ تخفیف</span> روی کل سفارش خود بهره‌مند شوید و غذاهای محبوبتان را ذخیره کنید.
+            </p>
+            <a href="{% url 'accounts:login' %}" class="add-btn" style="justify-content: center; margin-top: 10px; text-decoration:none;">
+                ورود / ثبت نام
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div id="toast"><ion-icon name="checkmark-circle" style="color:#00ff88; font-size:1.5rem;"></ion-icon> <span id="toast-msg">آیتم به سبد اضافه شد</span></div>
+
+    <script>
+        // --- 1. CART LOGIC ---
+        function addToCart(productId, productName) {
+            const url = '/add-to-cart/'; 
+            const data = { id: productId, quantity: 1 };
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(`«${productName}» به سبد خرید اضافه شد`);
+                    // 🟢 UPDATE ALL BADGES (In Sticky Nav)
+                    document.querySelectorAll('.cart-count').forEach(badge => {
+                        badge.innerText = data.cart_total;
+                    });
+                } else {
+                    showToast(data.error || "خطا در افزودن به سبد", true);
+                }
+            })
+            .catch(err => console.error(err));
+        }
+
+        // --- 2. FAVORITES LOGIC ---
+        function toggleFavorite(itemId, btnElement) {
+            const url = "{% url 'accounts:toggle_favorite' %}";
+            const icon = btnElement.querySelector('ion-icon');
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                body: JSON.stringify({ 'item_id': itemId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 🟢 CHECK 'is_favorited' (with 'd')
+                    if (data.is_favorited) {
+                        btnElement.classList.add('active');
+                        icon.setAttribute('name', 'heart');
+                    } else {
+                        btnElement.classList.remove('active');
+                        icon.setAttribute('name', 'heart-outline');
+                    }
+                    showToast(data.message);
+                }
+            });
+        }
+
+        // --- 3. UI LOGIC (Modal & Scroll) ---
+        document.addEventListener("DOMContentLoaded", function() {
+            if (!sessionStorage.getItem('modalClosed')) {
+                setTimeout(() => {
+                    const modal = document.getElementById('loginModal');
+                    if(modal) modal.classList.add('active');
+                }, 2000);
+            }
+            
+            // Scroll to top visibility
+            window.addEventListener('scroll', () => {
+                const scrollBtn = document.querySelector('.scroll-top');
+                if (window.scrollY > 500) scrollBtn.classList.add('visible');
+                else scrollBtn.classList.remove('visible');
+            });
+        });
+
+        function closeModal() {
+            document.getElementById('loginModal').classList.remove('active');
+            sessionStorage.setItem('modalClosed', 'true');
+        }
+
+        // --- HELPERS ---
+        function showToast(message, isError = false) {
+            const x = document.getElementById("toast");
+            document.getElementById("toast-msg").innerText = message;
+            x.style.borderColor = isError ? '#ff4444' : '#8e2de2';
+            x.className = "show";
+            setTimeout(() => x.className = x.className.replace("show", ""), 3000);
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+
+</body>
+</html>
